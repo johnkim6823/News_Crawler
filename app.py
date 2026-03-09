@@ -25,11 +25,12 @@ class CrawlerTask:
         self.id = str(uuid.uuid4())
         self.company = company
         self.job = job
-        self.status = "pending"  # pending, running, completed, error
+        self.status = "pending"  # pending, running, completed, error, cancelled
         self.progress = []
         self.queue = queue.Queue()
         self.data = None
         self.error = None
+        self.cancelled = False
         self.created_at = datetime.now()
 
     def send_event(self, event_type, message, detail=""):
@@ -57,6 +58,17 @@ def patched_print_step(task, original_func):
     return wrapper
 
 
+def patched_safe_request(task, original_func):
+    """safe_request를 패치하여 취소 지원"""
+
+    def wrapper(url, description=""):
+        if task.cancelled:
+            return None
+        return original_func(url, description)
+
+    return wrapper
+
+
 def run_crawler_task(task):
     """백그라운드에서 크롤러 실행"""
     try:
@@ -66,20 +78,26 @@ def run_crawler_task(task):
         # 진행상황 출력 함수를 패치
         orig_section = crawler.print_section
         orig_step = crawler.print_step
+        orig_safe_request = crawler.safe_request
         crawler.print_section = patched_print_section(task, orig_section)
         crawler.print_step = patched_print_step(task, orig_step)
+        crawler.safe_request = patched_safe_request(task, orig_safe_request)
 
         try:
             output_dir = "research_output"
             task.data = crawler.run_crawler(task.company, task.job, output_dir)
-            task.status = "completed"
 
-            total_items = sum(len(v) for v in task.data.values())
-            task.send_event("complete", f"크롤링 완료! 총 {total_items}건 수집")
+            if task.cancelled:
+                task.status = "cancelled"
+                task.send_event("error", "사용자에 의해 취소되었습니다.")
+            else:
+                task.status = "completed"
+                total_items = sum(len(v) for v in task.data.values())
+                task.send_event("complete", f"크롤링 완료! 총 {total_items}건 수집")
         finally:
-            # 원래 함수로 복원
             crawler.print_section = orig_section
             crawler.print_step = orig_step
+            crawler.safe_request = orig_safe_request
 
     except Exception as e:
         task.status = "error"
@@ -131,6 +149,19 @@ def stream_progress(task_id):
                 yield f"data: {json.dumps({'type': 'ping', 'message': ''})}\n\n"
 
     return Response(generate(), mimetype="text/event-stream")
+
+
+@app.route("/api/cancel/<task_id>", methods=["POST"])
+def cancel_crawl(task_id):
+    """크롤링 취소 API"""
+    task = tasks.get(task_id)
+    if not task:
+        return jsonify({"error": "작업을 찾을 수 없습니다."}), 404
+    if task.status != "running":
+        return jsonify({"error": "실행 중인 작업이 아닙니다."}), 400
+
+    task.cancelled = True
+    return jsonify({"ok": True})
 
 
 @app.route("/api/result/<task_id>")
@@ -226,6 +257,21 @@ def get_history_detail(filename):
         "markdown": md_content,
         "total_items": sum(len(v) for v in data.values()),
     })
+
+
+@app.route("/api/history/<filename>", methods=["DELETE"])
+def delete_history(filename):
+    """리서치 기록 삭제"""
+    output_dir = "research_output"
+    deleted = False
+    for ext in (".json", ".md"):
+        path = os.path.join(output_dir, f"{filename}{ext}")
+        if os.path.exists(path):
+            os.remove(path)
+            deleted = True
+    if not deleted:
+        return jsonify({"error": "파일을 찾을 수 없습니다."}), 404
+    return jsonify({"ok": True})
 
 
 if __name__ == "__main__":
