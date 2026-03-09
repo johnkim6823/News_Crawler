@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기업 리서치 크롤러</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #242736;
+            --border: #2e3142;
+            --text: #e4e6f0;
+            --text-dim: #8b8fa3;
+            --primary: #6c5ce7;
+            --primary-glow: rgba(108, 92, 231, 0.3);
+            --accent: #00cec9;
+            --accent-glow: rgba(0, 206, 201, 0.2);
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #e17055;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-nav { display: flex; gap: 0.5rem; }
+        .header-nav button {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .header-nav button:hover, .header-nav button.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* Layout */
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+
+        /* Search Form */
+        .search-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .search-card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        .form-group {
+            flex: 1;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+        .form-group input::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.7rem 2rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* Progress */
+        .progress-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+        .progress-card.show { display: block; }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .progress-header h3 { font-size: 1rem; }
+        .progress-status {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .progress-status.running { background: var(--primary-glow); color: var(--primary); }
+        .progress-status.completed { background: rgba(0,184,148,0.15); color: var(--success); }
+        .progress-status.error { background: rgba(225,112,85,0.15); color: var(--danger); }
+
+        .progress-bar-track {
+            width: 100%;
+            height: 4px;
+            background: var(--surface2);
+            border-radius: 2px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        .progress-bar-fill.indeterminate {
+            width: 30%;
+            animation: indeterminate 1.5s infinite ease-in-out;
+        }
+        @keyframes indeterminate {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+        }
+
+        .progress-log {
+            max-height: 250px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            padding: 0.5rem;
+        }
+        .progress-log::-webkit-scrollbar { width: 4px; }
+        .progress-log::-webkit-scrollbar-track { background: var(--surface2); }
+        .progress-log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .log-item { padding: 0.15rem 0; }
+        .log-item.section { color: var(--accent); font-weight: 600; margin-top: 0.3rem; }
+        .log-item.step { color: var(--text-dim); }
+        .log-item.complete { color: var(--success); font-weight: 600; }
+        .log-item.error { color: var(--danger); }
+
+        /* Results */
+        .results-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: none;
+        }
+        .results-card.show { display: block; }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .results-header h3 { font-size: 1.1rem; }
+        .results-stats { display: flex; gap: 1.5rem; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .stat-label { font-size: 0.7rem; color: var(--text-dim); }
+
+        .results-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn-download {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-download:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            padding: 0 1.5rem;
+        }
+        .tab {
+            padding: 0.8rem 1.2rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: var(--text); }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .tab-content { display: none; padding: 1.5rem; }
+        .tab-content.active { display: block; }
+
+        /* Report view */
+        .report-content {
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: var(--text);
+        }
+        .report-content h1 { font-size: 1.5rem; color: var(--accent); margin-bottom: 1rem; }
+        .report-content h2 { font-size: 1.2rem; color: var(--primary); margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); }
+        .report-content h3 { font-size: 1rem; color: var(--text); margin: 1.2rem 0 0.5rem; }
+        .report-content p { margin-bottom: 0.5rem; }
+        .report-content ul { padding-left: 1.5rem; margin-bottom: 0.8rem; }
+        .report-content li { margin-bottom: 0.3rem; color: var(--text-dim); }
+        .report-content strong { color: var(--text); }
+        .report-content a { color: var(--accent); text-decoration: none; }
+        .report-content a:hover { text-decoration: underline; }
+        .report-content hr { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+        .report-content pre {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        .report-content code { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
+        .report-content blockquote {
+            border-left: 3px solid var(--primary);
+            padding-left: 1rem;
+            color: var(--text-dim);
+            margin: 0.8rem 0;
+        }
+        .report-content em { color: var(--text-dim); }
+
+        /* Data view */
+        .data-section {
+            margin-bottom: 1.5rem;
+        }
+        .data-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.8rem;
+            background: var(--surface2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .data-section-header:hover { background: var(--border); }
+        .data-section-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .data-section-count {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            background: var(--bg);
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+        }
+        .data-section-body {
+            display: none;
+            padding: 0.8rem;
+        }
+        .data-section.open .data-section-body { display: block; }
+
+        .data-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .data-item-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        .data-item-meta {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+        }
+        .data-item-meta a { color: var(--accent); text-decoration: none; word-break: break-all; }
+        .data-item-content {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        /* History */
+        .history-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .history-item:hover { border-color: var(--primary); }
+        .history-item-info h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+        .history-item-info span { font-size: 0.8rem; color: var(--text-dim); }
+        .history-item-date { font-size: 0.8rem; color: var(--text-dim); }
+
+        /* Section labels mapping */
+        .section-label { font-weight: 500; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row { flex-direction: column; }
+            .results-header { flex-direction: column; gap: 1rem; }
+            .container { padding: 1rem; }
+        }
+
+        /* Page views */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-dim);
+        }
+        .empty-state svg { margin-bottom: 1rem; opacity: 0.3; }
+        .empty-state p { font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>기업 리서치 크롤러</h1>
+        <div class="header-nav">
+            <button class="active" onclick="showPage('search')">리서치</button>
+            <button onclick="showPage('history')">기록</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Search Page -->
+        <div id="page-search" class="page active">
+            <div class="search-card">
+                <h2>취업 준비용 기업/직무 정보 자동 수집</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>회사명</label>
+                        <input type="text" id="company" placeholder="예: 삼성전자, LG에너지솔루션" />
+                    </div>
+                    <div class="form-group">
+                        <label>직무명</label>
+                        <input type="text" id="job" placeholder="예: 백엔드개발, AI엔지니어" />
+                    </div>
+                    <button class="btn-primary" id="btn-start" onclick="startCrawl()">리서치 시작</button>
+                </div>
+            </div>
+
+            <!-- Progress -->
+            <div class="progress-card" id="progress-card">
+                <div class="progress-header">
+                    <h3 id="progress-title">크롤링 중...</h3>
+                    <span class="progress-status running" id="progress-status">진행 중</span>
+                </div>
+                <div class="progress-bar-track">
+                    <div class="progress-bar-fill indeterminate" id="progress-bar"></div>
+                </div>
+                <div class="progress-log" id="progress-log"></div>
+            </div>
+
+            <!-- Results -->
+            <div class="results-card" id="results-card">
+                <div class="results-header">
+                    <div>
+                        <h3 id="results-title">리서치 결과</h3>
+                        <div class="results-stats" id="results-stats"></div>
+                    </div>
+                    <div class="results-actions" id="results-actions"></div>
+                </div>
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('report')">리포트</div>
+                    <div class="tab" onclick="switchTab('data')">상세 데이터</div>
+                </div>
+                <div class="tab-content active" id="tab-report">
+                    <div class="report-content" id="report-content"></div>
+                </div>
+                <div class="tab-content" id="tab-data">
+                    <div id="data-content"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Page -->
+        <div id="page-history" class="page">
+            <h2 style="margin-bottom: 1rem; font-size: 1.1rem;">리서치 기록</h2>
+            <div id="history-list" class="history-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const SECTION_LABELS = {
+            company_overview: '회사 개요 / 사업영역 / 비전',
+            company_news: '최근 뉴스',
+            company_culture: '기업문화 / 근무환경',
+            company_finance: '재무 실적',
+            company_industry: '산업 동향 / 경쟁사',
+            company_recent: '최근 이슈 / 신사업',
+            job_info: '직무 소개',
+            job_news: '직무 관련 뉴스',
+            job_postings: '채용 공고',
+            tech_stack: '기술스택',
+            interview_reviews: '면접 후기',
+            salary_benefits: '연봉 / 복지',
+            career_page: '공식 채용 페이지',
+            job_posting_links: '채용 사이트 링크',
+        };
+
+        let currentTaskId = null;
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${page}`).classList.add('active');
+            document.querySelectorAll('.header-nav button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (page === 'history') loadHistory();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+        }
+
+        async function startCrawl() {
+            const company = document.getElementById('company').value.trim();
+            const job = document.getElementById('job').value.trim();
+
+            if (!company || !job) {
+                alert('회사명과 직무명을 모두 입력해주세요.');
+                return;
+            }
+
+            document.getElementById('btn-start').disabled = true;
+            document.getElementById('progress-card').classList.add('show');
+            document.getElementById('results-card').classList.remove('show');
+            document.getElementById('progress-log').innerHTML = '';
+            document.getElementById('progress-title').textContent = `${company} / ${job} 리서치 중...`;
+
+            const statusEl = document.getElementById('progress-status');
+            statusEl.className = 'progress-status running';
+            statusEl.textContent = '진행 중';
+
+            const bar = document.getElementById('progress-bar');
+            bar.style.width = '0%';
+            bar.classList.add('indeterminate');
+
+            try {
+                const res = await fetch('/api/crawl', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ company, job }),
+                });
+                const result = await res.json();
+
+                if (result.error) {
+                    alert(result.error);
+                    document.getElementById('btn-start').disabled = false;
+                    return;
+                }
+
+                currentTaskId = result.task_id;
+                listenProgress(result.task_id);
+            } catch (err) {
+                alert('서버 연결 실패: ' + err.message);
+                document.getElementById('btn-start').disabled = false;
+            }
+        }
+
+        function listenProgress(taskId) {
+            const logEl = document.getElementById('progress-log');
+            const evtSource = new EventSource(`/api/progress/${taskId}`);
+
+            let stepCount = 0;
+            const totalSteps = 65; // approximate total steps
+
+            evtSource.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+
+                if (data.type === 'ping') return;
+
+                if (data.type === 'section') {
+                    const div = document.createElement('div');
+                    div.className = 'log-item section';
+                    div.textContent = data.message;
+                    logEl.appendChild(div);
+                } else if (data.type === 'step') {
+                    stepCount++;
+                    const div = document.createElement('div');
+                    div.className = 'log-item step';
+                    div.textContent = `  ${data.message}`;
+                    logEl.appendChild(div);
+
+                    const bar = document.getElementById('progress-bar');
+                    bar.classList.remove('indeterminate');
+                    bar.style.width = Math.min((stepCount / totalSteps) * 100, 95) + '%';
+                } else if (data.type === 'complete') {
+                    const div = document.createElement('div');
+                    div.className = 'log-item complete';
+                    div.textContent = data.message;
+                    logEl.appendChild(div);
+
+                    const statusEl = document.getElementById('progress-status');
+                    statusEl.className = 'progress-status completed';
+                    statusEl.textContent = '완료';
+
+                    const bar = document.getElementById('progress-bar');
+                    bar.classList.remove('indeterminate');
+                    bar.style.width = '100%';
+
+                    evtSource.close();
+                    loadResult(taskId);
+                    document.getElementById('btn-start').disabled = false;
+                } else if (data.type === 'error') {
+                    const div = document.createElement('div');
+                    div.className = 'log-item error';
+                    div.textContent = data.message;
+                    logEl.appendChild(div);
+
+                    const statusEl = document.getElementById('progress-status');
+                    statusEl.className = 'progress-status error';
+                    statusEl.textContent = '오류';
+
+                    evtSource.close();
+                    document.getElementById('btn-start').disabled = false;
+                }
+
+                logEl.scrollTop = logEl.scrollHeight;
+            };
+
+            evtSource.onerror = function () {
+                evtSource.close();
+                document.getElementById('btn-start').disabled = false;
+            };
+        }
+
+        async function loadResult(taskId) {
+            try {
+                const res = await fetch(`/api/result/${taskId}`);
+                const result = await res.json();
+                if (result.error) return;
+                displayResult(result, taskId);
+            } catch (err) {
+                console.error('결과 로드 실패:', err);
+            }
+        }
+
+        function displayResult(result, taskId) {
+            const card = document.getElementById('results-card');
+            card.classList.add('show');
+
+            document.getElementById('results-title').textContent =
+                `${result.company} / ${result.job} 리서치 결과`;
+
+            document.getElementById('results-stats').innerHTML = `
+                <div class="stat">
+                    <div class="stat-value">${result.total_items}</div>
+                    <div class="stat-label">수집 항목</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">${Object.keys(result.data).length}</div>
+                    <div class="stat-label">카테고리</div>
+                </div>
+            `;
+
+            // Download buttons
+            if (taskId) {
+                document.getElementById('results-actions').innerHTML = `
+                    <button class="btn-download" onclick="location.href='/api/download/${taskId}/md'">Markdown 다운로드</button>
+                    <button class="btn-download" onclick="location.href='/api/download/${taskId}/json'">JSON 다운로드</button>
+                `;
+            } else {
+                document.getElementById('results-actions').innerHTML = '';
+            }
+
+            // Report tab - render markdown
+            document.getElementById('report-content').innerHTML = renderMarkdown(result.markdown);
+
+            // Data tab
+            let dataHtml = '';
+            for (const [key, items] of Object.entries(result.data)) {
+                const label = SECTION_LABELS[key] || key;
+                dataHtml += `
+                    <div class="data-section" onclick="this.classList.toggle('open')">
+                        <div class="data-section-header">
+                            <span class="data-section-title">${label}</span>
+                            <span class="data-section-count">${items.length}건</span>
+                        </div>
+                        <div class="data-section-body">
+                            ${items.map(item => `
+                                <div class="data-item">
+                                    ${item.title ? `<div class="data-item-title">${escapeHtml(item.title)}</div>` : ''}
+                                    <div class="data-item-meta">
+                                        ${item.date ? `<span>${escapeHtml(item.date)}</span> | ` : ''}
+                                        ${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank">${escapeHtml(item.url)}</a>` : ''}
+                                    </div>
+                                    <div class="data-item-content">${escapeHtml(item.content || '')}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('data-content').innerHTML = dataHtml;
+        }
+
+        function renderMarkdown(md) {
+            if (!md) return '';
+            // Simple markdown to HTML conversion
+            let html = md
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                // Code blocks
+                .replace(/```\n?([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+                // Headers
+                .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+                .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+                .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+                // Bold
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                // Italic / emphasis
+                .replace(/_(.+?)_/g, '<em>$1</em>')
+                // Links
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+                // Blockquotes
+                .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
+                // Unordered list
+                .replace(/^- (.+)$/gm, '<li>$1</li>')
+                // Horizontal rule
+                .replace(/^---$/gm, '<hr>')
+                // Paragraphs
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+            return `<p>${html}</p>`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function loadHistory() {
+            try {
+                const res = await fetch('/api/history');
+                const items = await res.json();
+                const listEl = document.getElementById('history-list');
+
+                if (items.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="empty-state">
+                            <p>아직 리서치 기록이 없습니다.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                listEl.innerHTML = items.map(item => `
+                    <div class="history-item" onclick="loadHistoryDetail('${item.filename}')">
+                        <div class="history-item-info">
+                            <h4>${escapeHtml(item.company)} / ${escapeHtml(item.job)}</h4>
+                            <span>${item.filename}</span>
+                        </div>
+                        <div class="history-item-date">${item.date}</div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error('기록 로드 실패:', err);
+            }
+        }
+
+        async function loadHistoryDetail(filename) {
+            try {
+                const res = await fetch(`/api/history/${filename}`);
+                const result = await res.json();
+                if (result.error) return;
+
+                showPage('search');
+                document.querySelectorAll('.header-nav button').forEach(b => b.classList.remove('active'));
+                document.querySelector('.header-nav button').classList.add('active');
+
+                document.getElementById('progress-card').classList.remove('show');
+                displayResult(result, null);
+
+                // Scroll to results
+                document.getElementById('results-card').scrollIntoView({ behavior: 'smooth' });
+            } catch (err) {
+                console.error('상세 로드 실패:', err);
+            }
+        }
+
+        // Enter key support
+        document.addEventListener('DOMContentLoaded', function () {
+            ['company', 'job'].forEach(id => {
+                document.getElementById(id).addEventListener('keypress', function (e) {
+                    if (e.key === 'Enter') startCrawl();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
