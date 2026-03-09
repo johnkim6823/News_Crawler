@@ -4,167 +4,278 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>기업 리서치 크롤러</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --bg: #0f1117;
-            --surface: #1a1d27;
-            --surface2: #242736;
-            --border: #2e3142;
-            --text: #e4e6f0;
-            --text-dim: #8b8fa3;
-            --primary: #6c5ce7;
-            --primary-glow: rgba(108, 92, 231, 0.3);
-            --accent: #00cec9;
-            --accent-glow: rgba(0, 206, 201, 0.2);
-            --success: #00b894;
-            --warning: #fdcb6e;
-            --danger: #e17055;
+            --bg: #f5f7fa;
+            --white: #ffffff;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --border-light: #f0f2f5;
+            --text: #1e293b;
+            --text-sub: #475569;
+            --text-dim: #94a3b8;
+            --blue: #2563eb;
+            --blue-light: #dbeafe;
+            --blue-hover: #1d4ed8;
+            --blue-50: rgba(37, 99, 235, 0.06);
+            --blue-glow: rgba(37, 99, 235, 0.15);
+            --green: #16a34a;
+            --green-light: #dcfce7;
+            --red: #dc2626;
+            --red-light: #fee2e2;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
+            --radius: 12px;
+            --radius-sm: 8px;
         }
 
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Header */
+        /* ── Header ── */
         .header {
-            background: var(--surface);
+            background: var(--white);
             border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
+            padding: 0 2rem;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .header-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+        .header-logo svg { width: 18px; height: 18px; }
         .header h1 {
-            font-size: 1.3rem;
+            font-size: 1.15rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text);
+            letter-spacing: -0.02em;
         }
-        .header-nav { display: flex; gap: 0.5rem; }
+        .header-nav { display: flex; gap: 0.4rem; }
         .header-nav button {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            color: var(--text-dim);
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-sub);
+            padding: 0.45rem 1rem;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             font-size: 0.85rem;
+            font-weight: 500;
             transition: all 0.2s;
+            font-family: inherit;
         }
-        .header-nav button:hover, .header-nav button.active {
-            background: var(--primary);
+        .header-nav button:hover {
+            background: var(--blue-50);
+            color: var(--blue);
+        }
+        .header-nav button.active {
+            background: var(--blue);
             color: #fff;
-            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
         }
 
-        /* Layout */
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        /* ── Layout ── */
+        .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
 
-        /* Search Form */
+        /* ── Hero / Search Card ── */
         .search-card {
-            background: var(--surface);
+            background: var(--white);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+        .search-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--blue);
         }
         .search-card h2 {
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+            font-weight: 700;
             color: var(--text);
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.02em;
         }
+        .search-card .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 2rem;
+        }
+
         .form-row {
             display: flex;
             gap: 1rem;
             align-items: flex-end;
         }
-        .form-group {
-            flex: 1;
-        }
+        .form-group { flex: 1; }
         .form-group label {
             display: block;
             font-size: 0.8rem;
-            color: var(--text-dim);
-            margin-bottom: 0.4rem;
-            font-weight: 500;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
         }
+        .input-wrapper {
+            position: relative;
+        }
+        .input-wrapper .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            display: flex;
+        }
+        .input-wrapper .input-icon svg { width: 18px; height: 18px; }
         .form-group input {
             width: 100%;
-            background: var(--surface2);
-            border: 1px solid var(--border);
+            background: var(--white);
+            border: 1.5px solid var(--border);
             color: var(--text);
-            padding: 0.7rem 1rem;
-            border-radius: 8px;
+            padding: 0.8rem 0.9rem 0.8rem 2.8rem;
+            border-radius: var(--radius-sm);
             font-size: 0.95rem;
+            font-family: inherit;
             outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .form-group input:hover {
+            border-color: #cbd5e1;
         }
         .form-group input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-glow);
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px var(--blue-glow), var(--shadow-sm);
         }
-        .form-group input::placeholder { color: var(--text-dim); opacity: 0.5; }
+        .form-group input::placeholder {
+            color: var(--text-dim);
+        }
 
         .btn-primary {
-            background: var(--primary);
+            background: var(--blue);
             color: #fff;
             border: none;
-            padding: 0.7rem 2rem;
-            border-radius: 8px;
+            padding: 0.8rem 2rem;
+            border-radius: var(--radius-sm);
             font-size: 0.95rem;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
             transition: all 0.2s;
             white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-primary:hover {
+            background: var(--blue-hover);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .btn-primary svg { width: 18px; height: 18px; }
 
-        /* Progress */
+        /* ── Progress Card ── */
         .progress-card {
-            background: var(--surface);
+            background: var(--white);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: var(--radius);
             padding: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             display: none;
+            box-shadow: var(--shadow-md);
         }
         .progress-card.show { display: block; }
+
         .progress-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
-        .progress-header h3 { font-size: 1rem; }
+        .progress-header h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+        }
         .progress-status {
-            font-size: 0.8rem;
-            padding: 0.2rem 0.7rem;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-weight: 600;
+            letter-spacing: 0.02em;
         }
-        .progress-status.running { background: var(--primary-glow); color: var(--primary); }
-        .progress-status.completed { background: rgba(0,184,148,0.15); color: var(--success); }
-        .progress-status.error { background: rgba(225,112,85,0.15); color: var(--danger); }
+        .progress-status.running {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+        .progress-status.completed {
+            background: var(--green-light);
+            color: var(--green);
+        }
+        .progress-status.error {
+            background: var(--red-light);
+            color: var(--red);
+        }
 
         .progress-bar-track {
             width: 100%;
-            height: 4px;
-            background: var(--surface2);
-            border-radius: 2px;
+            height: 6px;
+            background: var(--border-light);
+            border-radius: 3px;
             margin-bottom: 1rem;
             overflow: hidden;
         }
         .progress-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            border-radius: 2px;
+            background: var(--blue);
+            border-radius: 3px;
             transition: width 0.5s ease;
             width: 0%;
         }
@@ -178,29 +289,38 @@
         }
 
         .progress-log {
-            max-height: 250px;
+            max-height: 220px;
             overflow-y: auto;
-            font-family: 'JetBrains Mono', 'Fira Code', monospace;
-            font-size: 0.8rem;
-            line-height: 1.6;
-            padding: 0.5rem;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.78rem;
+            line-height: 1.7;
+            padding: 0.8rem;
+            background: #f8fafc;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
         }
         .progress-log::-webkit-scrollbar { width: 4px; }
-        .progress-log::-webkit-scrollbar-track { background: var(--surface2); }
+        .progress-log::-webkit-scrollbar-track { background: transparent; }
         .progress-log::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-        .log-item { padding: 0.15rem 0; }
-        .log-item.section { color: var(--accent); font-weight: 600; margin-top: 0.3rem; }
+        .log-item { padding: 0.1rem 0; }
+        .log-item.section {
+            color: var(--blue);
+            font-weight: 600;
+            margin-top: 0.4rem;
+        }
         .log-item.step { color: var(--text-dim); }
-        .log-item.complete { color: var(--success); font-weight: 600; }
-        .log-item.error { color: var(--danger); }
+        .log-item.complete { color: var(--green); font-weight: 600; }
+        .log-item.error { color: var(--red); font-weight: 600; }
 
-        /* Results */
+        /* ── Results Card ── */
         .results-card {
-            background: var(--surface);
+            background: var(--white);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: var(--radius);
             display: none;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
         }
         .results-card.show { display: block; }
 
@@ -208,212 +328,377 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem;
+            padding: 1.5rem 2rem;
             border-bottom: 1px solid var(--border);
+            background: #fafbfc;
         }
-        .results-header h3 { font-size: 1.1rem; }
-        .results-stats { display: flex; gap: 1.5rem; }
-        .stat { text-align: center; }
-        .stat-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
-        .stat-label { font-size: 0.7rem; color: var(--text-dim); }
-
-        .results-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .btn-download {
-            background: var(--surface2);
-            border: 1px solid var(--border);
+        .results-header h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
             color: var(--text);
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+        .results-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 0.3rem;
+        }
+        .stat {
+            display: flex;
+            align-items: baseline;
+            gap: 0.4rem;
+        }
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--blue);
+        }
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .results-actions { display: flex; gap: 0.5rem; }
+        .btn-download {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            color: var(--text-sub);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
             font-size: 0.8rem;
+            font-weight: 500;
+            font-family: inherit;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
-        .btn-download:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-download svg { width: 14px; height: 14px; }
+        .btn-download:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+            box-shadow: var(--shadow);
+        }
 
-        /* Tabs */
+        /* ── Tabs ── */
         .tabs {
             display: flex;
             border-bottom: 1px solid var(--border);
-            padding: 0 1.5rem;
+            padding: 0 2rem;
+            background: #fafbfc;
         }
         .tab {
-            padding: 0.8rem 1.2rem;
+            padding: 0.85rem 1.2rem;
             color: var(--text-dim);
             cursor: pointer;
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
             border-bottom: 2px solid transparent;
             transition: all 0.2s;
+            margin-bottom: -1px;
         }
-        .tab:hover { color: var(--text); }
-        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .tab:hover { color: var(--text-sub); }
+        .tab.active {
+            color: var(--blue);
+            border-bottom-color: var(--blue);
+        }
 
-        .tab-content { display: none; padding: 1.5rem; }
+        .tab-content { display: none; padding: 2rem; }
         .tab-content.active { display: block; }
 
-        /* Report view */
+        /* ── Report View ── */
         .report-content {
             font-size: 0.9rem;
-            line-height: 1.8;
+            line-height: 1.9;
             color: var(--text);
         }
-        .report-content h1 { font-size: 1.5rem; color: var(--accent); margin-bottom: 1rem; }
-        .report-content h2 { font-size: 1.2rem; color: var(--primary); margin: 1.5rem 0 0.8rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); }
-        .report-content h3 { font-size: 1rem; color: var(--text); margin: 1.2rem 0 0.5rem; }
-        .report-content p { margin-bottom: 0.5rem; }
-        .report-content ul { padding-left: 1.5rem; margin-bottom: 0.8rem; }
-        .report-content li { margin-bottom: 0.3rem; color: var(--text-dim); }
-        .report-content strong { color: var(--text); }
-        .report-content a { color: var(--accent); text-decoration: none; }
-        .report-content a:hover { text-decoration: underline; }
-        .report-content hr { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
-        .report-content pre {
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 1rem;
-            overflow-x: auto;
-            margin: 0.5rem 0;
-            font-size: 0.8rem;
-            line-height: 1.5;
+        .report-content h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--blue);
         }
-        .report-content code { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
-        .report-content blockquote {
-            border-left: 3px solid var(--primary);
-            padding-left: 1rem;
-            color: var(--text-dim);
+        .report-content h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--blue);
+            margin: 2rem 0 0.8rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .report-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin: 1.5rem 0 0.5rem;
+        }
+        .report-content p { margin-bottom: 0.6rem; }
+        .report-content ul { padding-left: 1.5rem; margin-bottom: 0.8rem; }
+        .report-content li { margin-bottom: 0.3rem; color: var(--text-sub); }
+        .report-content strong { color: var(--text); font-weight: 600; }
+        .report-content a { color: var(--blue); text-decoration: none; font-weight: 500; }
+        .report-content a:hover { text-decoration: underline; }
+        .report-content hr { border: none; border-top: 1px solid var(--border); margin: 1.2rem 0; }
+        .report-content pre {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.2rem;
+            overflow-x: auto;
             margin: 0.8rem 0;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .report-content code {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.85em;
+        }
+        .report-content blockquote {
+            border-left: 3px solid var(--blue);
+            padding: 0.6rem 1rem;
+            color: var(--text-sub);
+            background: var(--blue-50);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: 1rem 0;
         }
         .report-content em { color: var(--text-dim); }
 
-        /* Data view */
-        .data-section {
-            margin-bottom: 1.5rem;
-        }
+        /* ── Data View ── */
+        .data-section { margin-bottom: 0.8rem; }
         .data-section-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.6rem 0.8rem;
-            background: var(--surface2);
-            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
-        .data-section-header:hover { background: var(--border); }
+        .data-section-header:hover {
+            box-shadow: var(--shadow);
+            border-color: #cbd5e1;
+        }
+        .data-section-header .arrow {
+            transition: transform 0.2s;
+            color: var(--text-dim);
+        }
+        .data-section.open .data-section-header .arrow {
+            transform: rotate(90deg);
+        }
+        .data-section-left {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
         .data-section-title {
             font-size: 0.9rem;
             font-weight: 600;
+            color: var(--text);
         }
         .data-section-count {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            background: var(--bg);
-            padding: 0.15rem 0.5rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--blue);
+            background: var(--blue-light);
+            padding: 0.15rem 0.55rem;
             border-radius: 10px;
         }
         .data-section-body {
             display: none;
-            padding: 0.8rem;
+            padding: 0.5rem 0 0.5rem 0;
         }
         .data-section.open .data-section-body { display: block; }
+        .data-section.open .data-section-header {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom-color: transparent;
+        }
 
         .data-item {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
+            background: #fafbfc;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.2rem;
             margin-bottom: 0.5rem;
+            transition: box-shadow 0.2s;
         }
+        .data-item:hover { box-shadow: var(--shadow); }
         .data-item-title {
             font-weight: 600;
             font-size: 0.9rem;
+            color: var(--text);
             margin-bottom: 0.3rem;
         }
         .data-item-meta {
             font-size: 0.75rem;
             color: var(--text-dim);
             margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
         }
-        .data-item-meta a { color: var(--accent); text-decoration: none; word-break: break-all; }
+        .data-item-meta a {
+            color: var(--blue);
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .data-item-meta a:hover { text-decoration: underline; }
+        .data-item-date {
+            background: var(--blue-light);
+            color: var(--blue);
+            padding: 0.1rem 0.45rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
         .data-item-content {
             font-size: 0.8rem;
-            color: var(--text-dim);
-            line-height: 1.5;
+            color: var(--text-sub);
+            line-height: 1.6;
             max-height: 150px;
             overflow-y: auto;
             white-space: pre-wrap;
+            padding: 0.6rem 0.8rem;
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            margin-top: 0.4rem;
         }
 
-        /* History */
+        /* ── History ── */
+        .history-page-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: var(--text);
+        }
         .history-list { display: flex; flex-direction: column; gap: 0.5rem; }
         .history-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--surface);
+            background: var(--white);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem 1.2rem;
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.5rem;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
         }
-        .history-item:hover { border-color: var(--primary); }
-        .history-item-info h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
-        .history-item-info span { font-size: 0.8rem; color: var(--text-dim); }
-        .history-item-date { font-size: 0.8rem; color: var(--text-dim); }
-
-        /* Section labels mapping */
-        .section-label { font-weight: 500; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .form-row { flex-direction: column; }
-            .results-header { flex-direction: column; gap: 1rem; }
-            .container { padding: 1rem; }
+        .history-item:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--blue);
+            transform: translateY(-1px);
+        }
+        .history-item-info h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.15rem;
+        }
+        .history-item-info span {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+        .history-item-date {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            font-weight: 500;
+            white-space: nowrap;
         }
 
-        /* Page views */
+        /* ── Page Views ── */
         .page { display: none; }
         .page.active { display: block; }
 
-        /* Empty state */
+        /* ── Empty State ── */
         .empty-state {
             text-align: center;
-            padding: 3rem;
+            padding: 4rem 2rem;
             color: var(--text-dim);
         }
-        .empty-state svg { margin-bottom: 1rem; opacity: 0.3; }
-        .empty-state p { font-size: 0.9rem; }
+        .empty-state .empty-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--blue-50);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+        .empty-state .empty-icon svg { width: 28px; height: 28px; color: var(--blue); opacity: 0.5; }
+        .empty-state p {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .form-row { flex-direction: column; }
+            .btn-primary { width: 100%; justify-content: center; }
+            .results-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+            .container { padding: 1rem; }
+            .search-card { padding: 1.5rem; }
+            .tab-content { padding: 1.2rem; }
+        }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <div class="header">
-        <h1>기업 리서치 크롤러</h1>
+        <div class="header-brand">
+            <div class="header-logo">
+                <svg fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+            </div>
+            <h1>기업 리서치</h1>
+        </div>
         <div class="header-nav">
-            <button class="active" onclick="showPage('search')">리서치</button>
-            <button onclick="showPage('history')">기록</button>
+            <button class="active" onclick="showPage('search', this)">리서치</button>
+            <button onclick="showPage('history', this)">기록</button>
         </div>
     </div>
 
     <div class="container">
-        <!-- Search Page -->
+        <!-- ===== Search Page ===== -->
         <div id="page-search" class="page active">
+            <!-- Search Card -->
             <div class="search-card">
-                <h2>취업 준비용 기업/직무 정보 자동 수집</h2>
+                <h2>기업/직무 리서치</h2>
+                <p class="subtitle">회사명과 직무를 입력하면 기업 정보, 뉴스, 채용 공고, 면접 후기를 자동으로 수집합니다.</p>
                 <div class="form-row">
                     <div class="form-group">
                         <label>회사명</label>
-                        <input type="text" id="company" placeholder="예: 삼성전자, LG에너지솔루션" />
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg>
+                            </span>
+                            <input type="text" id="company" placeholder="삼성전자, LG에너지솔루션, 카카오..." />
+                        </div>
                     </div>
                     <div class="form-group">
                         <label>직무명</label>
-                        <input type="text" id="job" placeholder="예: 백엔드개발, AI엔지니어" />
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                            </span>
+                            <input type="text" id="job" placeholder="백엔드개발, AI엔지니어, 데이터분석..." />
+                        </div>
                     </div>
-                    <button class="btn-primary" id="btn-start" onclick="startCrawl()">리서치 시작</button>
+                    <button class="btn-primary" id="btn-start" onclick="startCrawl()">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                        리서치 시작
+                    </button>
                 </div>
             </div>
 
@@ -439,8 +724,8 @@
                     <div class="results-actions" id="results-actions"></div>
                 </div>
                 <div class="tabs">
-                    <div class="tab active" onclick="switchTab('report')">리포트</div>
-                    <div class="tab" onclick="switchTab('data')">상세 데이터</div>
+                    <div class="tab active" onclick="switchTab('report', this)">리포트</div>
+                    <div class="tab" onclick="switchTab('data', this)">상세 데이터</div>
                 </div>
                 <div class="tab-content active" id="tab-report">
                     <div class="report-content" id="report-content"></div>
@@ -451,9 +736,9 @@
             </div>
         </div>
 
-        <!-- History Page -->
+        <!-- ===== History Page ===== -->
         <div id="page-history" class="page">
-            <h2 style="margin-bottom: 1rem; font-size: 1.1rem;">리서치 기록</h2>
+            <h2 class="history-page-title">리서치 기록</h2>
             <div id="history-list" class="history-list"></div>
         </div>
     </div>
@@ -478,19 +763,18 @@
 
         let currentTaskId = null;
 
-        function showPage(page) {
+        function showPage(page, btn) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(`page-${page}`).classList.add('active');
             document.querySelectorAll('.header-nav button').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-
+            btn.classList.add('active');
             if (page === 'history') loadHistory();
         }
 
-        function switchTab(tab) {
+        function switchTab(tab, btn) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
+            btn.classList.add('active');
             document.getElementById(`tab-${tab}`).classList.add('active');
         }
 
@@ -544,7 +828,7 @@
             const evtSource = new EventSource(`/api/progress/${taskId}`);
 
             let stepCount = 0;
-            const totalSteps = 65; // approximate total steps
+            const totalSteps = 65;
 
             evtSource.onmessage = function (event) {
                 const data = JSON.parse(event.data);
@@ -635,27 +919,29 @@
                 </div>
             `;
 
-            // Download buttons
+            const dlIcon = '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>';
             if (taskId) {
                 document.getElementById('results-actions').innerHTML = `
-                    <button class="btn-download" onclick="location.href='/api/download/${taskId}/md'">Markdown 다운로드</button>
-                    <button class="btn-download" onclick="location.href='/api/download/${taskId}/json'">JSON 다운로드</button>
+                    <button class="btn-download" onclick="location.href='/api/download/${taskId}/md'">${dlIcon} Markdown</button>
+                    <button class="btn-download" onclick="location.href='/api/download/${taskId}/json'">${dlIcon} JSON</button>
                 `;
             } else {
                 document.getElementById('results-actions').innerHTML = '';
             }
 
-            // Report tab - render markdown
             document.getElementById('report-content').innerHTML = renderMarkdown(result.markdown);
 
-            // Data tab
+            const arrowSvg = '<svg class="arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>';
             let dataHtml = '';
             for (const [key, items] of Object.entries(result.data)) {
                 const label = SECTION_LABELS[key] || key;
                 dataHtml += `
                     <div class="data-section" onclick="this.classList.toggle('open')">
                         <div class="data-section-header">
-                            <span class="data-section-title">${label}</span>
+                            <div class="data-section-left">
+                                ${arrowSvg}
+                                <span class="data-section-title">${label}</span>
+                            </div>
                             <span class="data-section-count">${items.length}건</span>
                         </div>
                         <div class="data-section-body">
@@ -663,10 +949,10 @@
                                 <div class="data-item">
                                     ${item.title ? `<div class="data-item-title">${escapeHtml(item.title)}</div>` : ''}
                                     <div class="data-item-meta">
-                                        ${item.date ? `<span>${escapeHtml(item.date)}</span> | ` : ''}
+                                        ${item.date ? `<span class="data-item-date">${escapeHtml(item.date)}</span>` : ''}
                                         ${item.url ? `<a href="${escapeHtml(item.url)}" target="_blank">${escapeHtml(item.url)}</a>` : ''}
                                     </div>
-                                    <div class="data-item-content">${escapeHtml(item.content || '')}</div>
+                                    ${item.content ? `<div class="data-item-content">${escapeHtml(item.content)}</div>` : ''}
                                 </div>
                             `).join('')}
                         </div>
@@ -678,28 +964,18 @@
 
         function renderMarkdown(md) {
             if (!md) return '';
-            // Simple markdown to HTML conversion
             let html = md
                 .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                // Code blocks
                 .replace(/```\n?([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-                // Headers
                 .replace(/^### (.+)$/gm, '<h3>$1</h3>')
                 .replace(/^## (.+)$/gm, '<h2>$1</h2>')
                 .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-                // Bold
                 .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                // Italic / emphasis
                 .replace(/_(.+?)_/g, '<em>$1</em>')
-                // Links
                 .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-                // Blockquotes
                 .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
-                // Unordered list
                 .replace(/^- (.+)$/gm, '<li>$1</li>')
-                // Horizontal rule
                 .replace(/^---$/gm, '<hr>')
-                // Paragraphs
                 .replace(/\n\n/g, '</p><p>')
                 .replace(/\n/g, '<br>');
             return `<p>${html}</p>`;
@@ -720,6 +996,9 @@
                 if (items.length === 0) {
                     listEl.innerHTML = `
                         <div class="empty-state">
+                            <div class="empty-icon">
+                                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
                             <p>아직 리서치 기록이 없습니다.</p>
                         </div>
                     `;
@@ -746,14 +1025,14 @@
                 const result = await res.json();
                 if (result.error) return;
 
-                showPage('search');
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                document.getElementById('page-search').classList.add('active');
                 document.querySelectorAll('.header-nav button').forEach(b => b.classList.remove('active'));
                 document.querySelector('.header-nav button').classList.add('active');
 
                 document.getElementById('progress-card').classList.remove('show');
                 displayResult(result, null);
 
-                // Scroll to results
                 document.getElementById('results-card').scrollIntoView({ behavior: 'smooth' });
             } catch (err) {
                 console.error('상세 로드 실패:', err);
