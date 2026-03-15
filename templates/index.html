@@ -563,10 +563,167 @@
         .empty-state .empty-icon svg { width: 28px; height: 28px; color: var(--blue); opacity: 0.5; }
         .empty-state p { font-size: 0.9rem; }
 
+        /* ── Dark Mode ── */
+        body.dark {
+            --bg: #0f1117;
+            --white: #1a1d27;
+            --surface: #1a1d27;
+            --border: #2e3142;
+            --border-light: #242736;
+            --text: #e4e6f0;
+            --text-sub: #a0a6b8;
+            --text-dim: #6b7280;
+            --blue-50: rgba(37, 99, 235, 0.12);
+            --blue-light: rgba(37, 99, 235, 0.2);
+            --blue-glow: rgba(37, 99, 235, 0.25);
+            --green-light: rgba(22, 163, 74, 0.15);
+            --red-light: rgba(220, 38, 38, 0.15);
+            --orange-light: rgba(234, 88, 12, 0.15);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+            --shadow: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.3);
+        }
+        body.dark .progress-log,
+        body.dark .data-item,
+        body.dark .results-header,
+        body.dark .tabs-container { background: #141620; }
+        body.dark .report-content pre { background: #141620; }
+        body.dark .form-group input { background: #141620; }
+        body.dark .data-item-content { background: #0f1117; }
+
+        .theme-toggle {
+            background: none; border: 1px solid var(--border);
+            color: var(--text-sub); width: 36px; height: 36px;
+            border-radius: var(--radius-sm); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .theme-toggle:hover { border-color: var(--blue); color: var(--blue); }
+        .theme-toggle svg { width: 18px; height: 18px; }
+
+        /* ── Back to Top ── */
+        .back-to-top {
+            position: fixed; bottom: 2rem; right: 2rem;
+            width: 42px; height: 42px;
+            background: var(--blue); color: #fff;
+            border: none; border-radius: 50%;
+            cursor: pointer; display: none;
+            align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            transition: all 0.3s; z-index: 90;
+        }
+        .back-to-top.show { display: flex; }
+        .back-to-top:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5); }
+        .back-to-top svg { width: 20px; height: 20px; }
+
+        /* ── TOC Sidebar ── */
+        .report-layout { display: flex; gap: 1.5rem; }
+        .report-toc {
+            width: 200px; flex-shrink: 0;
+            position: sticky; top: 80px; align-self: flex-start;
+            max-height: calc(100vh - 100px); overflow-y: auto;
+        }
+        .report-toc-title {
+            font-size: 0.72rem; font-weight: 700; color: var(--text-dim);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            margin-bottom: 0.6rem; padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .report-toc a {
+            display: block; font-size: 0.78rem; color: var(--text-dim);
+            text-decoration: none; padding: 0.3rem 0.5rem;
+            border-left: 2px solid transparent;
+            border-radius: 0 4px 4px 0; transition: all 0.15s;
+            line-height: 1.4;
+        }
+        .report-toc a:hover { color: var(--blue); background: var(--blue-50); }
+        .report-toc a.active { color: var(--blue); border-left-color: var(--blue); font-weight: 600; }
+        .report-toc a.toc-h2 { font-weight: 600; margin-top: 0.3rem; }
+        .report-toc a.toc-h3 { padding-left: 1rem; font-size: 0.73rem; }
+        .report-body { flex: 1; min-width: 0; }
+
+        /* ── Expand/Collapse All ── */
+        .data-toolbar {
+            display: flex; justify-content: flex-end; gap: 0.4rem;
+            margin-bottom: 0.8rem;
+        }
+        .btn-sm {
+            background: var(--white); border: 1px solid var(--border);
+            color: var(--text-sub); padding: 0.3rem 0.7rem;
+            border-radius: 6px; font-size: 0.75rem; font-weight: 500;
+            font-family: inherit; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-sm:hover { border-color: var(--blue); color: var(--blue); }
+
+        /* ── Keyboard shortcut hints ── */
+        .kbd {
+            display: inline-block; background: var(--bg);
+            border: 1px solid var(--border); border-radius: 4px;
+            padding: 0.1rem 0.4rem; font-size: 0.65rem;
+            font-family: 'SF Mono', monospace; color: var(--text-dim);
+            margin-left: 0.3rem; vertical-align: middle;
+            box-shadow: 0 1px 0 var(--border);
+        }
+
+        /* ── Compare View ── */
+        .compare-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1rem; margin-top: 1rem;
+        }
+        .compare-col {
+            background: var(--white); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 1.2rem;
+            box-shadow: var(--shadow);
+        }
+        .compare-col h4 {
+            font-size: 1rem; font-weight: 700; color: var(--blue);
+            margin-bottom: 0.8rem; padding-bottom: 0.4rem;
+            border-bottom: 2px solid var(--blue);
+        }
+        .compare-row {
+            display: flex; justify-content: space-between;
+            padding: 0.4rem 0; border-bottom: 1px solid var(--border-light);
+            font-size: 0.82rem;
+        }
+        .compare-row-label { color: var(--text-sub); }
+        .compare-row-value { font-weight: 600; color: var(--text); }
+        .compare-bar-container { margin-top: 1rem; }
+        .compare-bar-row {
+            display: flex; align-items: center; gap: 0.5rem;
+            margin-bottom: 0.4rem; font-size: 0.75rem;
+        }
+        .compare-bar-label { width: 70px; color: var(--text-dim); text-align: right; flex-shrink: 0; }
+        .compare-bar-track { flex: 1; height: 8px; background: var(--border-light); border-radius: 4px; overflow: hidden; }
+        .compare-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+        .compare-bar-fill.a { background: var(--blue); }
+        .compare-bar-fill.b { background: var(--green); }
+        .compare-bar-val { width: 25px; color: var(--text-sub); font-weight: 600; }
+
+        .compare-select-item {
+            display: flex; align-items: center; gap: 0.6rem;
+            background: var(--white); border: 1px solid var(--border);
+            border-radius: var(--radius-sm); padding: 0.7rem 1rem;
+            margin-bottom: 0.4rem; cursor: pointer; transition: all 0.2s;
+        }
+        .compare-select-item:hover { border-color: var(--blue); }
+        .compare-select-item.selected { border-color: var(--blue); background: var(--blue-50); }
+        .compare-select-item input { accent-color: var(--blue); }
+        .compare-select-info { flex: 1; }
+        .compare-select-info h5 { font-size: 0.88rem; font-weight: 600; margin-bottom: 0.1rem; }
+        .compare-select-info span { font-size: 0.75rem; color: var(--text-dim); }
+        .compare-actions { margin-top: 1rem; display: flex; gap: 0.5rem; }
+
+        @media (max-width: 768px) {
+            .report-toc { display: none; }
+            .compare-grid { grid-template-columns: 1fr; }
+        }
+
         /* ── Print styles ── */
         @media print {
             .header, .search-card, .progress-card, .tabs-container,
-            .results-header, .summary-grid, .toast-container { display: none !important; }
+            .results-header, .summary-grid, .toast-container,
+            .back-to-top, .report-toc, .data-toolbar { display: none !important; }
             .results-card { box-shadow: none !important; border: none !important; }
             .tab-content { display: block !important; padding: 0 !important; }
             #tab-data { display: none !important; }
@@ -602,6 +759,10 @@
         <div class="header-nav">
             <button class="active" onclick="showPage('search', this)">리서치</button>
             <button onclick="showPage('history', this)">기록</button>
+            <button class="theme-toggle" onclick="toggleDarkMode()" title="다크/라이트 모드 전환" id="theme-btn">
+                <svg id="theme-icon-sun" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+                <svg id="theme-icon-moon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+            </button>
         </div>
     </div>
 
@@ -646,7 +807,7 @@
                     <button class="btn-primary" id="btn-start" onclick="startCrawl()">
                         <span class="spinner"></span>
                         <svg class="btn-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
-                        <span class="btn-text">리서치 시작</span>
+                        <span class="btn-text">리서치 시작 <span class="kbd">Ctrl+Enter</span></span>
                     </button>
                 </div>
             </div>
@@ -698,9 +859,18 @@
                 </div>
 
                 <div class="tab-content active" id="tab-report">
-                    <div class="report-content" id="report-content"></div>
+                    <div class="report-layout">
+                        <nav class="report-toc" id="report-toc"></nav>
+                        <div class="report-body">
+                            <div class="report-content" id="report-content"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-content" id="tab-data">
+                    <div class="data-toolbar">
+                        <button class="btn-sm" onclick="toggleAllSections(true)">모두 펼치기</button>
+                        <button class="btn-sm" onclick="toggleAllSections(false)">모두 접기</button>
+                    </div>
                     <div id="data-content"></div>
                 </div>
             </div>
@@ -710,10 +880,29 @@
         <div id="page-history" class="page">
             <div class="history-page-header">
                 <h2 class="history-page-title">리서치 기록</h2>
+                <button class="btn-sm" id="btn-compare-mode" onclick="toggleCompareMode()">비교 모드</button>
+            </div>
+            <div id="compare-actions" class="compare-actions" style="display:none">
+                <button class="btn-primary" onclick="runCompare()" style="padding:0.5rem 1.2rem; font-size:0.85rem">선택 항목 비교</button>
+                <button class="btn-sm" onclick="toggleCompareMode()">취소</button>
             </div>
             <div id="history-list" class="history-list"></div>
         </div>
+
+        <!-- ===== Compare Page ===== -->
+        <div id="page-compare" class="page">
+            <div class="history-page-header">
+                <h2 class="history-page-title">리서치 비교</h2>
+                <button class="btn-sm" onclick="showPage('history', document.querySelectorAll('.header-nav button')[1])">돌아가기</button>
+            </div>
+            <div id="compare-content"></div>
+        </div>
     </div>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="back-to-top" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+        <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"/></svg>
+    </button>
 
     <script>
         /* ── SVG Icons ── */
@@ -823,6 +1012,7 @@
             bar.classList.add('indeterminate');
 
             crawlStartTime = Date.now();
+            updateTabTitle(`${company} 리서치 중...`);
 
             try {
                 const res = await fetch('/api/crawl', {
@@ -892,6 +1082,7 @@
 
                     document.getElementById('progress-step-count').textContent =
                         `${stepCount} / ~${totalSteps} 단계 (${Math.round(pct)}%)`;
+                    updateTabTitle(`(${Math.round(pct)}%) 리서치 중`);
 
                     // ETA
                     if (stepCount > 3 && crawlStartTime) {
@@ -922,6 +1113,8 @@
 
                     evtSource.close();
                     showToast('리서치가 완료되었습니다!', 'success');
+                    sendBrowserNotification('리서치 완료', `${document.getElementById('company').value} 리서치가 완료되었습니다.`);
+                    updateTabTitle('');
                     loadResult(taskId);
                     resetBtn();
                 } else if (data.type === 'error') {
@@ -937,6 +1130,7 @@
 
                     evtSource.close();
                     showToast(data.message, 'error', 5000);
+                    updateTabTitle('');
                     resetBtn();
                 }
 
@@ -1008,6 +1202,7 @@
 
             // Report tab
             document.getElementById('report-content').innerHTML = renderMarkdown(result.markdown);
+            generateTOC();
 
             // Data tab
             let dataHtml = '';
@@ -1159,20 +1354,32 @@
                     return;
                 }
 
-                listEl.innerHTML = items.map(item => `
-                    <div class="history-item">
-                        <div class="history-item-info" onclick="loadHistoryDetail('${item.filename}')">
-                            <h4>${escapeHtml(item.company)} / ${escapeHtml(item.job)}</h4>
-                            <span>${item.filename}</span>
+                if (compareMode) {
+                    listEl.innerHTML = items.map(item => `
+                        <div class="compare-select-item" onclick="toggleCompareSelect('${item.filename}', this)">
+                            <input type="checkbox" onclick="event.stopPropagation()">
+                            <div class="compare-select-info">
+                                <h5>${escapeHtml(item.company)} / ${escapeHtml(item.job)}</h5>
+                                <span>${item.date}</span>
+                            </div>
                         </div>
-                        <div class="history-item-right">
-                            <div class="history-item-date">${item.date}</div>
-                            <button class="btn-delete-history" onclick="deleteHistory('${item.filename}', event)" title="삭제">
-                                ${ICONS.trash}
-                            </button>
+                    `).join('');
+                } else {
+                    listEl.innerHTML = items.map(item => `
+                        <div class="history-item">
+                            <div class="history-item-info" onclick="loadHistoryDetail('${item.filename}')">
+                                <h4>${escapeHtml(item.company)} / ${escapeHtml(item.job)}</h4>
+                                <span>${item.filename}</span>
+                            </div>
+                            <div class="history-item-right">
+                                <div class="history-item-date">${item.date}</div>
+                                <button class="btn-delete-history" onclick="deleteHistory('${item.filename}', event)" title="삭제">
+                                    ${ICONS.trash}
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `).join('');
+                }
             } catch (err) {
                 console.error('기록 로드 실패:', err);
             }
@@ -1213,7 +1420,191 @@
             }
         }
 
-        /* ── Enter Key ── */
+        /* ── Dark Mode ── */
+        function toggleDarkMode() {
+            const isDark = document.body.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark ? '1' : '0');
+            updateThemeIcon(isDark);
+        }
+        function updateThemeIcon(isDark) {
+            document.getElementById('theme-icon-sun').style.display = isDark ? '' : 'none';
+            document.getElementById('theme-icon-moon').style.display = isDark ? 'none' : '';
+        }
+        // Init dark mode from localStorage
+        if (localStorage.getItem('darkMode') === '1') {
+            document.body.classList.add('dark');
+            updateThemeIcon(true);
+        }
+
+        /* ── Browser Notification ── */
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+        function sendBrowserNotification(title, body) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, { body, icon: '' });
+            }
+        }
+        requestNotificationPermission();
+
+        /* ── Tab Title Progress ── */
+        const originalTitle = document.title;
+        function updateTabTitle(text) {
+            document.title = text ? `${text} - 기업 리서치` : originalTitle;
+        }
+
+        /* ── Back to Top ── */
+        window.addEventListener('scroll', function() {
+            const btn = document.getElementById('back-to-top');
+            btn.classList.toggle('show', window.scrollY > 400);
+        });
+
+        /* ── TOC Generation ── */
+        function generateTOC() {
+            const reportEl = document.getElementById('report-content');
+            const tocEl = document.getElementById('report-toc');
+            const headings = reportEl.querySelectorAll('h1, h2, h3');
+            if (headings.length === 0) { tocEl.innerHTML = ''; return; }
+
+            let html = '<div class="report-toc-title">목차</div>';
+            headings.forEach((h, i) => {
+                const id = `toc-heading-${i}`;
+                h.id = id;
+                const tag = h.tagName.toLowerCase();
+                const cls = tag === 'h1' ? 'toc-h1' : tag === 'h2' ? 'toc-h2' : 'toc-h3';
+                html += `<a href="#${id}" class="${cls}" onclick="event.preventDefault(); document.getElementById('${id}').scrollIntoView({behavior:'smooth', block:'start'})">${h.textContent}</a>`;
+            });
+            tocEl.innerHTML = html;
+        }
+
+        /* ── Expand/Collapse All ── */
+        function toggleAllSections(open) {
+            document.querySelectorAll('.data-section').forEach(s => {
+                s.classList.toggle('open', open);
+            });
+        }
+
+        /* ── Compare Mode ── */
+        let compareMode = false;
+        let compareSelections = [];
+
+        function toggleCompareMode() {
+            compareMode = !compareMode;
+            compareSelections = [];
+            document.getElementById('btn-compare-mode').textContent = compareMode ? '비교 모드 해제' : '비교 모드';
+            document.getElementById('compare-actions').style.display = compareMode ? 'flex' : 'none';
+            loadHistory();
+        }
+
+        async function runCompare() {
+            if (compareSelections.length !== 2) {
+                showToast('비교할 기록 2개를 선택해주세요.', 'warning');
+                return;
+            }
+            try {
+                const res = await fetch('/api/compare', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ files: compareSelections }),
+                });
+                const results = await res.json();
+                if (results.error) { showToast(results.error, 'error'); return; }
+                displayCompare(results);
+            } catch (err) {
+                showToast('비교 실패', 'error');
+            }
+        }
+
+        function toggleCompareSelect(filename, el) {
+            const idx = compareSelections.indexOf(filename);
+            if (idx >= 0) {
+                compareSelections.splice(idx, 1);
+                el.classList.remove('selected');
+                el.querySelector('input').checked = false;
+            } else {
+                if (compareSelections.length >= 2) {
+                    showToast('최대 2개까지 선택할 수 있습니다.', 'warning');
+                    return;
+                }
+                compareSelections.push(filename);
+                el.classList.add('selected');
+                el.querySelector('input').checked = true;
+            }
+        }
+
+        function displayCompare(results) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-compare').classList.add('active');
+
+            const [a, b] = results;
+            const allKeys = [...new Set([...Object.keys(a.data), ...Object.keys(b.data)])];
+            const maxTotal = Math.max(a.total_items, b.total_items, 1);
+
+            let barsHtml = '';
+            allKeys.forEach(key => {
+                const label = SECTION_LABELS[key] || key;
+                const aCount = (a.data[key] || []).length;
+                const bCount = (b.data[key] || []).length;
+                const maxVal = Math.max(aCount, bCount, 1);
+                barsHtml += `
+                    <div class="compare-bar-row">
+                        <span class="compare-bar-label">${label}</span>
+                        <div class="compare-bar-track"><div class="compare-bar-fill a" style="width:${(aCount/maxVal)*100}%"></div></div>
+                        <span class="compare-bar-val">${aCount}</span>
+                        <div class="compare-bar-track"><div class="compare-bar-fill b" style="width:${(bCount/maxVal)*100}%"></div></div>
+                        <span class="compare-bar-val">${bCount}</span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('compare-content').innerHTML = `
+                <div class="compare-grid">
+                    <div class="compare-col">
+                        <h4 style="color: var(--blue)">${escapeHtml(a.company)} / ${escapeHtml(a.job)}</h4>
+                        <div class="compare-row"><span class="compare-row-label">총 수집 항목</span><span class="compare-row-value">${a.total_items}건</span></div>
+                        <div class="compare-row"><span class="compare-row-label">카테고리</span><span class="compare-row-value">${Object.keys(a.data).length}개</span></div>
+                    </div>
+                    <div class="compare-col">
+                        <h4 style="color: var(--green)">${escapeHtml(b.company)} / ${escapeHtml(b.job)}</h4>
+                        <div class="compare-row"><span class="compare-row-label">총 수집 항목</span><span class="compare-row-value">${b.total_items}건</span></div>
+                        <div class="compare-row"><span class="compare-row-label">카테고리</span><span class="compare-row-value">${Object.keys(b.data).length}개</span></div>
+                    </div>
+                </div>
+                <div style="margin-top:1.5rem; background:var(--white); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; box-shadow:var(--shadow)">
+                    <h4 style="font-size:0.9rem; margin-bottom:1rem; color:var(--text)">카테고리별 비교</h4>
+                    <div style="display:flex; gap:1rem; margin-bottom:0.8rem; font-size:0.75rem">
+                        <span style="display:flex; align-items:center; gap:0.3rem"><span style="width:12px;height:12px;background:var(--blue);border-radius:2px;display:inline-block"></span>${escapeHtml(a.company)}</span>
+                        <span style="display:flex; align-items:center; gap:0.3rem"><span style="width:12px;height:12px;background:var(--green);border-radius:2px;display:inline-block"></span>${escapeHtml(b.company)}</span>
+                    </div>
+                    <div class="compare-bar-container">${barsHtml}</div>
+                </div>
+            `;
+        }
+
+        /* ── Keyboard Shortcuts ── */
+        document.addEventListener('keydown', function (e) {
+            // Ctrl+Enter: start crawl
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                startCrawl();
+            }
+            // Esc: cancel crawl
+            if (e.key === 'Escape') {
+                const btn = document.getElementById('btn-cancel');
+                if (btn && btn.style.display !== 'none') {
+                    cancelCrawl();
+                }
+            }
+            // Ctrl+D: toggle dark mode
+            if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+                e.preventDefault();
+                toggleDarkMode();
+            }
+        });
+
+        /* ── Init ── */
         document.addEventListener('DOMContentLoaded', function () {
             ['company', 'job'].forEach(id => {
                 document.getElementById(id).addEventListener('keypress', function (e) {

@@ -259,6 +259,32 @@ def get_history_detail(filename):
     })
 
 
+@app.route("/api/compare", methods=["POST"])
+def compare_results():
+    """두 리서치 결과 비교"""
+    data = request.get_json()
+    files = data.get("files", [])
+    if len(files) != 2:
+        return jsonify({"error": "비교할 파일 2개를 선택해주세요."}), 400
+
+    output_dir = "research_output"
+    results = []
+    for filename in files:
+        json_path = os.path.join(output_dir, f"{filename}.json")
+        if not os.path.exists(json_path):
+            return jsonify({"error": f"{filename} 파일을 찾을 수 없습니다."}), 404
+        with open(json_path, "r", encoding="utf-8") as f:
+            file_data = json.load(f)
+        parts = filename.split("_", 1)
+        results.append({
+            "company": parts[0] if len(parts) >= 1 else "",
+            "job": parts[1] if len(parts) >= 2 else "",
+            "data": file_data,
+            "total_items": sum(len(v) for v in file_data.values()),
+        })
+    return jsonify(results)
+
+
 @app.route("/api/history/<filename>", methods=["DELETE"])
 def delete_history(filename):
     """리서치 기록 삭제"""
